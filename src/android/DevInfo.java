@@ -1,5 +1,5 @@
 
-package cordova_plugin_DevTemp;
+package cordova_plugin_DevInfo;
 
 import org.apache.cordova.*;
 
@@ -10,13 +10,15 @@ import org.json.JSONObject;
 import java.io.*;
 //import android.util.Log;
 import java.util.ArrayList;
+import cordova_plugin_DevInfo.NetStuff;
 
 /**
  * This class echoes a string called from JavaScript.
  */
-public class DevTemp extends CordovaPlugin {
+public class DevInfo extends CordovaPlugin {
 
 	private CallbackContext callbackContext;
+	private NetStuff netstuff;
   /**
      * Sets the context of the Command. This can then be used to do things like
      * get file paths associated with the Activity.
@@ -27,6 +29,7 @@ public class DevTemp extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         this.getTemperatureFiles();
+		this.netstuff = new NetStuff();	// to get network related parameters
     }
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
@@ -38,6 +41,54 @@ public class DevTemp extends CordovaPlugin {
 			float temperature = getCpuTemp(toto);
 			JSONArray value = new JSONArray();
 			value.put(Float.parseFloat(temperature+""));
+			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
+			return true;
+        }
+		else if(action.equals("getIPv6")) 
+		{
+			String ipv6;
+			if(this.netstuff != null)
+				ipv6 = this.netstuff.getIPv6();
+			else
+				ipv6 = "netstuff not initialized somehow";			
+			JSONArray value = new JSONArray();
+			value.put(ipv6+"");
+			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
+			return true;
+        }
+		else if(action.equals("getIPv4")) 
+		{
+			String ipv4;
+			if(this.netstuff != null)
+				ipv4 = this.netstuff.getIPv4();
+			else
+				ipv4 = "netstuff not initialized somehow";			
+			JSONArray value = new JSONArray();
+			value.put(ipv4+"");
+			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
+			return true;
+        }
+ 		else if(action.equals("getMacAddress")) 
+		{
+			String mac;
+			if(this.netstuff != null)
+				mac = this.netstuff.getMacAddress();
+			else
+				mac = "netstuff not initialized somehow";			
+			JSONArray value = new JSONArray();
+			value.put(mac+"");
+			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
+			return true;
+        }
+ 		else if(action.equals("getEUI48MacAddress")) 
+		{
+			String mac;
+			if(this.netstuff != null)
+				mac = this.netstuff.getEUI48MacAddress();
+			else
+				mac = "netstuff not initialized somehow";			
+			JSONArray value = new JSONArray();
+			value.put(mac+"");
 			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
 			return true;
         }

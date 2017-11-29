@@ -3,6 +3,17 @@ Cordova plugin to retrieve useful device information (temperature, mac addresss.
 
 Currently only implemented for Android.
 
+entry points:
+
+float getTemperature(void): return battery temperature in degrees celsius.
+String[] getInterfacesNames(void): retrieve all interfaces names declared in Android.
+setInterfaceByName(String Name): set selected interface by name (as retrieved by getInterfacesNames)
+String getIPv4(void): retrieve currently selected ip v4 address. may not work for current interface.
+String getIPv6(void): retrieve currently selected ip v6 address. may not work for current interface.
+String getMacAddress(void): retrieve currently selected mac address (hardware address).
+String getEUI48MacAddress(void) retrieve 48 bit mac address from currently selected interface hardware address. only works if starts with 0xFE80
+
+
 Sample usage: TBD
 
 

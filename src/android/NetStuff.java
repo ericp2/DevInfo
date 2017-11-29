@@ -167,7 +167,7 @@ public class NetStuff
 				// properly formatting the mac address
 				StringBuilder macAddress = new StringBuilder();
 				for (int i = 0; i < mac.length; i++) {
-					macAddress.append(String.format("%03X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+					macAddress.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
 				}
 				return macAddress.toString();
 			}

@@ -203,7 +203,7 @@ public class NetStuff
 				return macAddress48.toString();
 			}
 		}
-		return this.selectedNI.getName() + " has no mac address";	
+		return this.selectedNI.getName() + " Mac address has wrong prefix for this";	
 	}
 	
 

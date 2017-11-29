@@ -6,20 +6,25 @@
 package cordova_plugin_DevInfo;
 
 import java.net.InetAddress;
+import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
 public class NetStuff
 {
 	protected NetworkInterface selectedNI;
+	protected List<String> names;	// interface names found
 	/**
 	* constructor: iterate existing interfaces and pick first one which makes sense
 	**/
 	public NetStuff()
 	{
+		//this.names = new List<String>;
 		this.getNetworkInterface();
 	}
 	
@@ -30,6 +35,7 @@ public class NetStuff
 	{
 		if(this.selectedNI  != null)
 			return this.selectedNI;
+		this.names = new ArrayList<String>();
 
 		try
 		{
@@ -41,18 +47,63 @@ public class NetStuff
 			{
 				NetworkInterface e = n.nextElement();
 				//System.out.println("Interface Name: " + e.getName());
-				if(e.getName().equals("lo"))
-					continue;	// this one is not interresting.
-				this.selectedNI = e;
-				return e;
-			}
+				String name = e.getName();
+				this.names.add(name);
+				//if(name.equals("lo"))
+				//	continue;	// this one is not interresting.
+				if(this.selectedNI == null)
+					this.selectedNI = e;
+				}
 		}
 		catch(Exception e)
 		{
 			return null;
 			//return e.getMessage();
 		}
-		return null; // none found?
+		return this.selectedNI;
+	}
+
+	/**
+	 * set selected interface from name
+	 * @param String selname the name to set
+	 * @return boolean true or false
+	 */
+	public boolean setInterfaceByName(String selname)
+	{
+		try
+		{
+			// getting the list of interfaces in the local machine
+			Enumeration<NetworkInterface> n = NetworkInterface.getNetworkInterfaces();
+			
+			// find first one which will be usefull in determining information
+			while( n.hasMoreElements()) //for each interface
+			{
+				NetworkInterface e = n.nextElement();
+				//System.out.println("Interface Name: " + e.getName());
+				String name = e.getName();
+				if(name.equals(selname))		// found it.
+				{
+					this.selectedNI = e;
+					return true;
+				}
+			}
+		}
+		catch(Exception e)
+		{
+			;
+			//return false;
+			//return e.getMessage();
+		}
+		return false;
+	}
+
+	/**
+	* return list of interface names found
+	* @return String[]
+	**/
+	protected String[] getNames()
+	{
+		return this.names.toArray(new String[names.size()]);
 	}
 
 	/**
@@ -69,9 +120,11 @@ public class NetStuff
 		while( a.hasMoreElements())
 		{
 			InetAddress addr = a.nextElement();
-			String add = addr.getHostAddress().toString();
-			if( add.length() < 17 )
+			if (addr instanceof Inet4Address)
+			{
+				String add = addr.getHostAddress().toString();
 				return add;		// found it;
+			}
 		}
 		return this.selectedNI.getName() + " has no IPv4 address";
 	}
@@ -90,9 +143,11 @@ public class NetStuff
 		while( a.hasMoreElements())
 		{
 			InetAddress addr = a.nextElement();
-			String add = addr.getHostAddress().toString();
-			if( add.length() >= 17 )
+			if (addr instanceof Inet6Address)
+			{
+				String add = addr.getHostAddress().toString();
 				return add;		// found it;
+			}
 		}
 		return this.selectedNI.getName() + " has no IPv6 address";	
 	}
@@ -135,13 +190,14 @@ public class NetStuff
 		while( a.hasMoreElements())
 		{
 			InetAddress addr = a.nextElement();
-			String add = addr.getHostAddress().toString();
-			if( add.length() >= 17 )
+			if (addr instanceof Inet6Address)
 			{
 				Inet6Address addr6 = (Inet6Address) addr;
+				String add = addr.getHostAddress().toString();
 				byte[]  eui48mac = this.getMacAddressFromIpv6(addr6);
 				StringBuilder macAddress48 = new StringBuilder();
-				for(int i =0; i < eui48mac.length; i++) {
+				for(int i =0; i < eui48mac.length; i++) 
+				{
 					macAddress48.append(String.format("%02X%s", eui48mac[i], (i < eui48mac.length - 1) ? "-" : ""));
 				}
 				return macAddress48.toString();
@@ -171,9 +227,10 @@ public class NetStuff
 			/*
 			 * Make sure that this is an fe80::/64 link-local address.
 			 */
-			//final byte[] ipv6Bytes = ipv6.getAddress();
+			final byte[] ipv6Bytes = ipv6.getAddress();
+			/* debug!
 			// FE80::fe64:baff:fe9a:d465
-			byte[] ipv6Bytes = new byte[16];
+			//byte[] ipv6Bytes = new byte[16];
 			ipv6Bytes[0]  = (byte) 0xFE;
 			ipv6Bytes[1]  = (byte)0x80;
 			ipv6Bytes[8]  = (byte)0xFE;
@@ -184,7 +241,8 @@ public class NetStuff
 			ipv6Bytes[13]  = (byte)0x9A;
 			ipv6Bytes[14]  = (byte)0xd4;
 			ipv6Bytes[15]  = (byte)0x65;
-			
+			 */
+
 			if ((ipv6Bytes != null) &&
 					(ipv6Bytes.length == 16) &&
 					(ipv6Bytes[0] == (byte) 0xfe) &&

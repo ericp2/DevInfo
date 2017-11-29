@@ -92,7 +92,41 @@ public class DevInfo extends CordovaPlugin {
 			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
 			return true;
         }
-        return false;
+ 		else if(action.equals("setInterfaceByName")) 
+		{
+			String Name = args.getString(0);	
+			int result = 0;
+			if(this.netstuff != null)
+				result  = (this.netstuff.setInterfaceByName(Name) == true) ? 1:0;
+			if(result == 0)
+				return false;
+			//callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
+			return true;
+        }
+		else if(action.equals("getInterfacesNames")) 
+		{
+			String[] names;
+			if(this.netstuff != null)
+            {
+				names = this.netstuff.getNames();
+				if(names.length == 0)   // did not work.
+                {
+                    names = new String[1];
+                    names[0] = "empty device list";
+                }
+            }
+			else
+			{
+				names = new String[1];
+				names[0] = "netstuff not initialized somehow";		
+			}				
+			JSONArray value = new JSONArray();
+			for(int i =0;i<names.length;i++)
+				value.put(names[i]);
+			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
+			return true;
+        }
+       return false;
     }
 
     public float getCpuTemp(File tempfile)

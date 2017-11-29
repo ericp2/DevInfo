@@ -15,6 +15,12 @@ module.exports = {
     },
    getEUI48MacAddress: function(successCallback) {
         cordova.exec(successCallback, null, "DevInfo", "getEUI48MacAddress", []);
+    },
+   getInterfacesNames: function(successCallback) {
+        cordova.exec(successCallback, null, "DevInfo", "getInterfacesNames", []);
+    },
+   setInterfaceByName: function(name,successCallback) {
+        cordova.exec(successCallback, null, "DevInfo", "setInterfaceByName", [name]);
     }
 
 };

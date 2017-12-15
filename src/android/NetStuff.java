@@ -18,6 +18,7 @@ import java.util.List;
 public class NetStuff
 {
 	protected NetworkInterface selectedNI;
+	protected String selectedName;	// name of currently selected network interface
 	protected List<String> names;	// interface names found
 	/**
 	* constructor: iterate existing interfaces and pick first one which makes sense
@@ -51,9 +52,12 @@ public class NetStuff
 				this.names.add(name);
 				//if(name.equals("lo"))
 				//	continue;	// this one is not interresting.
-				if(this.selectedNI == null)
+				if (this.selectedNI == null)
+				{
 					this.selectedNI = e;
+					this.selectedName = name;
 				}
+			}
 		}
 		catch(Exception e)
 		{
@@ -70,6 +74,15 @@ public class NetStuff
 	 */
 	public boolean setInterfaceByName(String selname)
 	{
+		if(selname.equals(""))
+			return true;		// no change. allows empty param.
+		// check if current one is already the right one
+		if(this.selectedName  != null)
+		{
+			if(this.selectedName.equals(selname))
+				return true;	// already the right one.
+		}
+		
 		try
 		{
 			// getting the list of interfaces in the local machine
@@ -84,6 +97,7 @@ public class NetStuff
 				if(name.equals(selname))		// found it.
 				{
 					this.selectedNI = e;
+					this.selectedName = name;
 					return true;
 				}
 			}
@@ -203,7 +217,7 @@ public class NetStuff
 				return macAddress48.toString();
 			}
 		}
-		return this.selectedNI.getName() + " Mac address has wrong prefix for this";	
+		return this.selectedNI.getName() + " IPV6 can't be used for this";	
 	}
 	
 

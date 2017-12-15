@@ -33,11 +33,13 @@ public class DevInfo extends CordovaPlugin {
     }
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
+		
+		String Name;	// holds argument passed
+		int result;
+		
         if (action.equals("getTemperature")) 
 		{	
-            //String message = args.getString(0);
-            //this.getTemperature(message, callbackContext);
-			File toto = this.getTempFile("AUTO");
+  			File toto = this.getTempFile("AUTO");
 			float temperature = getCpuTemp(toto);
 			JSONArray value = new JSONArray();
 			value.put(Float.parseFloat(temperature+""));
@@ -48,7 +50,13 @@ public class DevInfo extends CordovaPlugin {
 		{
 			String ipv6;
 			if(this.netstuff != null)
+			{
+				Name = args.getString(0);	
+				result  = (this.netstuff.setInterfaceByName(Name) == true) ? 1:0;
+				if(result == 0)
+					return false;
 				ipv6 = this.netstuff.getIPv6();
+			}
 			else
 				ipv6 = "netstuff not initialized somehow";			
 			JSONArray value = new JSONArray();
@@ -60,7 +68,13 @@ public class DevInfo extends CordovaPlugin {
 		{
 			String ipv4;
 			if(this.netstuff != null)
+			{
+				Name = args.getString(0);	
+				result  = (this.netstuff.setInterfaceByName(Name) == true) ? 1:0;
+				if(result == 0)
+					return false;
 				ipv4 = this.netstuff.getIPv4();
+			}
 			else
 				ipv4 = "netstuff not initialized somehow";			
 			JSONArray value = new JSONArray();
@@ -72,7 +86,13 @@ public class DevInfo extends CordovaPlugin {
 		{
 			String mac;
 			if(this.netstuff != null)
+			{
+				Name = args.getString(0);	
+				result  = (this.netstuff.setInterfaceByName(Name) == true) ? 1:0;
+				if(result == 0)
+					return false;
 				mac = this.netstuff.getMacAddress();
+			}
 			else
 				mac = "netstuff not initialized somehow";			
 			JSONArray value = new JSONArray();
@@ -84,7 +104,13 @@ public class DevInfo extends CordovaPlugin {
 		{
 			String mac;
 			if(this.netstuff != null)
+			{
+				Name = args.getString(0);	
+				result  = (this.netstuff.setInterfaceByName(Name) == true) ? 1:0;
+				if(result == 0)
+					return false;
 				mac = this.netstuff.getEUI48MacAddress();
+			}
 			else
 				mac = "netstuff not initialized somehow";			
 			JSONArray value = new JSONArray();
@@ -92,6 +118,7 @@ public class DevInfo extends CordovaPlugin {
 			callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
 			return true;
         }
+		/*
  		else if(action.equals("setInterfaceByName")) 
 		{
 			String Name = args.getString(0);	
@@ -103,6 +130,7 @@ public class DevInfo extends CordovaPlugin {
 			//callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.OK, value));
 			return true;
         }
+		*/
 		else if(action.equals("getInterfacesNames")) 
 		{
 			String[] names;
@@ -148,18 +176,9 @@ public class DevInfo extends CordovaPlugin {
         }
     }
 	
-   private void getTemperature(String message, CallbackContext callbackContext) {
-        if (message != null && message.length() > 0) {
-            callbackContext.success(message);
-        } else {
-            callbackContext.error("Expected one non-empty string argument.");
-        }
-    }
-
 	/**
 	* find the appropriate temperature file for this device.
 	**/
-	
     private static String[] getTemperatureFiles() 
 	{
         ArrayList<String> result = new ArrayList<String>();

@@ -1,6 +1,6 @@
 {
   "name": "DevInfo",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Retrieves various device information on Android",
   "main": "index.js",
   "scripts": {
